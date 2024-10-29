@@ -24,8 +24,15 @@ const phonebookArr = [
     }
 ]
 
-app.get('/api/persons', (req, res) => {
-    res.json(phonebookArr)
+app.get('/api/persons', (request, response) => {
+    response.json(phonebookArr)
+})
+
+app.get('/info', (request, response) => {
+    response.send(`
+        <p>Phonebook has info for ${phonebookArr.length} people</p>
+        <p>${Date(Date.now())}</p>
+        `)
 })
 
 const PORT = 3001

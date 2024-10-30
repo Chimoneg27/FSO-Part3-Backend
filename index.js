@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 
-const phonebookArr = [
+let phonebookArr = [
     { 
       "id": "1",
       "name": "Arto Hellas", 
@@ -37,13 +37,20 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
     const id = request.params.id
-    const singlePerson = phonebookArr.find(p => p.id === id)
+    const person = phonebookArr.find(p => p.id === id)
 
-    if(singlePerson) {
-        response.json(singlePerson)
+    if(person) {
+        response.json(person)
     } else {
         response.status(404).end()
     }
+})
+
+app.delete('/api/persons/:id', (request, response) => {
+  const id = request.params.id
+  phonebookArr = phonebookArr.filter(person => person.id !== id) 
+
+  response.status(204).end()
 })
 
 const PORT = 3001

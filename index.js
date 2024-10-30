@@ -62,11 +62,19 @@ app.post('/api/persons/', (request, response) => {
   let newId = randomId(10)
   const body = request.body
 
-  // if(!body.name || !body.number) {
-  //   return response.status(400).json({
-  //     error: 'please enter a name or a number'
-  //   })
-  // }
+  if(!body.name || !body.number) {
+    return response.status(400).json({
+      error: 'please enter a name or a number'
+    })
+  }
+
+  const uniqueName = phonebookArr.find(person => person.name === body.name)
+  const nameExists = uniqueName !== undefined
+  if(nameExists) {
+    return response.status(400).json({
+      error: 'please enter a unique name'
+    })
+  }
 
   const person = {
     id: newId,

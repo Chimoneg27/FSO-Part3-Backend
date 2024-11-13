@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
+    "build:ui": "rm -rf dist && cd ../fullstackopen/part2/phonebook && npm run build && cp -r dist ../../FSO-Part2-Backend",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Garvin Chimone",

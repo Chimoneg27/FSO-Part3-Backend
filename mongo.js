@@ -10,7 +10,7 @@ const name = process.argv[3]
 const number = process.argv[4]
 
 const url =
-  `mongodb+srv://fullstack:${password}@cluster0.o1opl.mongodb.net/?retryWrites=true&w=majority`
+  `mongodb+srv://GarvinChimone:${password}@persons.hf8ny.mongodb.net/Phonebook?retryWrites=true&w=majority&appName=Persons`
 
 mongoose.set('strictQuery',false)
 
@@ -29,6 +29,6 @@ const person = new Person({
 })
 
 person.save().then(result => {
-  console.log('note saved!')
+  console.log(`added ${result.name} number ${result.number} to phonebook`)
   mongoose.connection.close()
 })

@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/persons')
 app.use(express.static('dist'))
 
 app.use(express.json())
@@ -12,31 +14,10 @@ morgan.token('body', (req, res) => {
   return JSON.stringify(req.body)
 })
 
-let phonebookArr = [
-    { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": "2",
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": "3",
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
-]
-
 app.get('/api/persons', (request, response) => {
-    response.json(phonebookArr)
+    Person.find({}).then(people => {
+      response.json(people)
+    })
 })
 
 app.get('/info', (request, response) => {
@@ -47,14 +28,9 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = phonebookArr.find(p => p.id === id)
-
-    if(person) {
-        response.json(person)
-    } else {
-        response.status(404).end()
-    }
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -64,39 +40,24 @@ app.delete('/api/persons/:id', (request, response) => {
   response.status(204).end()
 })
 
-const randomId = (length = 8) => {
-  return Math.random().toString(36).substring(2, length+2);
-};
-
 app.post('/api/persons/', (request, response) => {
-  let newId = randomId(10)
   const body = request.body
 
-  if(!body.name || !body.number) {
-    return response.status(400).json({
-      error: 'please enter a name or a number'
-    })
+  if(body.name === undefined) {
+    return response.status(400).json({ error: 'name missing' })
   }
 
-  const uniqueName = phonebookArr.find(person => person.name === body.name)
-  const nameExists = uniqueName !== undefined
-  if(nameExists) {
-    return response.status(400).json({
-      error: 'please enter a unique name'
-    })
-  }
-
-  const person = {
-    id: newId,
+  const person = new Person({
     name: body.name,
     number: body.number
-  }
+  })
 
-  phonebookArr = phonebookArr.concat(person)
-  response.json(phonebookArr)
+  person.save().then(savedNote => {
+    response.json(savedNote)
+  })
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
